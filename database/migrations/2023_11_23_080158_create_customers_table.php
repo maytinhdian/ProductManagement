@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('handphone')->unique();
             $table->enum('customer_group', ['cá nhân', 'công ty'])->default('cá nhân');
             $table->string('handphone2');
+            $table->geometry('gps_map');
             $table->timestamps();
         });
     }
