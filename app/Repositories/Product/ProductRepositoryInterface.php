@@ -1,8 +1,9 @@
 <?php
+namespace App\Repositories\Product;
 
 use App\Repositories\RepositoryInterface;
 
-interface ProductsRepositoryInterface extends RepositoryInterface{
-    //Lấy danh sách sản phẩm  
+interface ProductRepositoryInterface extends RepositoryInterface{
+    //Lấy danh sách sản phẩm
     public function getProducts();
 }
