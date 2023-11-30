@@ -2,9 +2,6 @@
 
 namespace Modules;
 
-
-
-
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Modules\User\src\Commands\TestCommand;
@@ -12,18 +9,49 @@ use Modules\User\src\Http\Middlewares\DemoMiddleware;
 
 class ModuleServiceProvider extends ServiceProvider
 {
+    private $middlewares = [
+        'demo' => DemoMiddleware::class,
+    ];
+    private $commands=[
+        TestCommand::class,
+    ];
     public function boot()
     {
-        // $dir = File::directories(__DIR__);
-        $directories = array_map('basename', File::directories(__DIR__));
-        // dd($directories);
-        if (!empty($directories)) {
-            foreach ($directories as $directory) {
-                $this->registerModule($directory);
+        $modules = $this->getModules();
+        if (!empty($modules)) {
+            foreach ($modules as $module) {
+                $this->registerModule($module);
             }
         }
     }
-    public function registerModule($module)
+
+    public function register()
+    {
+        //Khai báo configs
+        $modules = $this->getModules();
+        if (!empty($modules)) {
+            foreach ($modules as $module) {
+                $this->registerConfig($module);
+            }
+
+        }
+
+        //Middleware
+        $this->registerMiddlewares();
+
+        //Commands
+        $this->commands($this->commands);
+    }
+
+    //Load Modules
+    private function getModules()
+    {
+        $directories = array_map('basename', File::directories(__DIR__));
+        return $directories;
+    }
+
+    // Register Module
+    private function registerModule($module)
     {
         $modulePath = __DIR__ . "/{$module}";
         // echo $modulePath.'<br/>';
@@ -62,39 +90,28 @@ class ModuleServiceProvider extends ServiceProvider
             }
         }
     }
-    public function register()
+
+    //Register configs
+    private function registerConfig($module)
     {
-        //Khai báo config
+        $configPath = __DIR__ . '/' . $module . '\configs';
 
-        $directories = array_map('basename', File::directories(__DIR__));
+        if (File::exists($configPath)) {
 
-        if (!empty($directories)) {
-            foreach ($directories as $directory) {
-               $configPath =__DIR__.'/'.$directory.'\configs';
-
-               if (File::exists($configPath)) {
-
-                $configFiles = array_map('basename',File::allFiles($configPath));
-                foreach ($configFiles as $config  ) {
-                    $alias = basename($config,'.php');
-                    $this->mergeConfigFrom($configPath.'/'.$config,$alias);
-                }
-               }
+            $configFiles = array_map('basename', File::allFiles($configPath));
+            foreach ($configFiles as $config) {
+                $alias = basename($config, '.php');
+                $this->mergeConfigFrom($configPath . '/' . $config, $alias);
             }
         }
-        //Middleware
-        $middlewares =[
-            'demo'=>DemoMiddleware::class
-        ];
-        if (!empty($middlewares)) {
-            foreach ($middlewares as $key => $middleware) {
+    }
+    //Register Middlewares
+    private function registerMiddlewares(){
+        if (!empty($this->middlewares)) {
+            foreach ($this->middlewares as $key => $middleware) {
 
-                $this->app['router']->pushMiddlewareToGroup($key,$middleware);
+                $this->app['router']->pushMiddlewareToGroup($key, $middleware);
             }
         }
-        //Commands
-        $this->commands([
-            TestCommand::class
-        ]);
     }
 }
