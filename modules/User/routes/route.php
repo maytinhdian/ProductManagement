@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function () {
-    return config('config');
+Route::middleware('demo')->get('/user', function () {
+    return config('config.test');
 });

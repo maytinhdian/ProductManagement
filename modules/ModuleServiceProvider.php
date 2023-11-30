@@ -7,6 +7,7 @@ namespace Modules;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use Modules\User\src\Http\Middlewares\DemoMiddleware;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -78,6 +79,16 @@ class ModuleServiceProvider extends ServiceProvider
                     $this->mergeConfigFrom($configPath.'/'.$config,$alias);
                 }
                }
+            }
+        }
+        //Middleware
+        $middlewares =[
+            'demo'=>DemoMiddleware::class
+        ];
+        if (!empty($middlewares)) {
+            foreach ($middlewares as $key => $middleware) {
+
+                $this->app['router']->pushMiddlewareToGroup($key,$middleware);
             }
         }
     }
