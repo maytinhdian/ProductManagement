@@ -70,13 +70,13 @@ class ModuleServiceProvider extends ServiceProvider
         //Khai báo languages
         if (File::exists($modulePath . '/resources/lang')) {
 
-            $this->loadTranslationsFrom($modulePath . '/resources/lang', $module);
+            $this->loadTranslationsFrom($modulePath . '/resources/lang', strtolower($module));
             $this->loadJsonTranslationsFrom($modulePath . '/resources/lang');
         }
         //Khai báo views
         if (File::exists($modulePath . '/resources/views')) {
 
-            $this->loadViewsFrom($modulePath . '/resources/views', $module);
+            $this->loadViewsFrom($modulePath . '/resources/views', strtolower($module) );
         }
         //Khai báo helpers
         if (File::exists($modulePath . '/helpers')) {

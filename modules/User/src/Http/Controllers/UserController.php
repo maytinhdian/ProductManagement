@@ -7,10 +7,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        return '<h1> User Management </h1>';
+        return view('user::lists');
     }
     public function detail($id)
     {
-        return '<h1> Detail ' . $id . '</h1> ';
+        return view('user::detail',compact('id'));
     }
 }
